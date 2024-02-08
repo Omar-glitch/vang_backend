@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Título</title>
+  </head>
+  <body class="container">
+    <header>Header</header>
+
+    <main>
+      <div class="jumbotron">
+        <h1>Gestión de celulares</h1>
+        <p>Welcome to templating using EJS</p>
+        <img src="/imgs/carro.jpg" alt="carro" />
+      </div>
+    </main>
+
+    <ul>
+      <% mascots.forEach(function(mascot) { %>
+      <li>
+        <strong><%= mascot.name %></strong>
+        representing <%= mascot.organization %>, born <%= mascot.birth_year %>
+      </li>
+      <% }); %>
+    </ul>
+
+    <footer>
+      <p><%= tagline %></p>
+      <p>footer</p>
+    </footer>
+  </body>
+</html>
