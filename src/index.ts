@@ -3,22 +3,18 @@ import cors from "cors";
 import employeeRouter from "./routes/employee.routes";
 import "./env";
 import connectToDatabase from "./database";
-import path from "path";
 import clientRouter from "./routes/client.routes";
 import repairRouter from "./routes/repair.routes";
 import inventoryRouter from "./routes/inventory.routes";
 import billRouter from "./routes/bill.routes";
-import Client from "./models/client";
+import purchaseRouter from "./routes/purchase.routes";
 
 const PORT = process.env.PORT;
 if (!PORT) throw new Error("No port in .env");
 
 const app = express();
 
-app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-app.set("view engine", "ejs");
 app.use(express.json());
 app.use(cors({ origin: process.env.FRONTEND_URL, optionsSuccessStatus: 200 }));
 app.use("/employees", employeeRouter);
@@ -26,6 +22,7 @@ app.use("/clients", clientRouter);
 app.use("/repairs", repairRouter);
 app.use("/inventories", inventoryRouter);
 app.use("/bills", billRouter);
+app.use("/purchases", purchaseRouter);
 
 connectToDatabase()
   .then((db) => {
