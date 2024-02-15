@@ -27,25 +27,6 @@ app.use("/repairs", repairRouter);
 app.use("/inventories", inventoryRouter);
 app.use("/bills", billRouter);
 
-app.get("/", async (req, res) => {
-  return res.render("pages/index", {
-    tagline: "quepasa",
-    mascots: [
-      {
-        name: "queso",
-        organization: "ñalskjdf",
-        birth_year: 2000,
-      },
-    ],
-  });
-});
-
-app.get("/clase", async (req, res) => {
-  return res.render("pages/clase.ejs", {
-    clients: await Client.find(),
-  });
-});
-
 connectToDatabase()
   .then((db) => {
     console.log("db is connected");
