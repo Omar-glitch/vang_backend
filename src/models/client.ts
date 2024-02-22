@@ -1,4 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export type ClientDocument = Document & {
+  name: string;
+  contact: string;
+};
 
 const clientSchema = new Schema(
   {

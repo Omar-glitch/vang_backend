@@ -1,9 +1,15 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export type BillDocument = Document & {
+  amount: number;
+  paid: number;
+  id_repair: Schema.Types.ObjectId;
+};
 
 const billSchema = new Schema(
   {
     amount: {
-      type: String,
+      type: Number,
       required: true,
       min: 20,
       max: 1_000_000,

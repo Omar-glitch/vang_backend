@@ -1,4 +1,13 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export type EmployeeDocument = Document & {
+  name: string;
+  email: string;
+  role: string;
+  phone: string;
+  age: number;
+  direction: string;
+};
 
 const employeeSchema = new Schema(
   {

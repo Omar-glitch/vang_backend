@@ -50,7 +50,7 @@ const putBill = async (req: Request, res: Response) => {
           id_repair: data.id_repair,
         },
       },
-      { returnDocument: "after" }
+      { returnDocument: "after", runValidators: true }
     );
     if (!updatedBill) return res.status(404).json("Factura no encontrada");
     return res.json(updatedBill);

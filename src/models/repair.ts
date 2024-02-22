@@ -1,4 +1,18 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export type RepairDocument = Document & {
+  price: number;
+  description: string;
+  status: string;
+  type: string;
+  id_empleado: Schema.Types.ObjectId;
+  id_cliente: Schema.Types.ObjectId;
+  item: {
+    id_item: Schema.Types.ObjectId;
+    amount: number;
+    cost: number;
+  };
+};
 
 const Item = new Schema({
   id_item: {

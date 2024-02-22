@@ -51,7 +51,7 @@ const putRepair = async (req: Request, res: Response) => {
     //       contact: data.contact,
     //     },
     //   },
-    //   { returnDocument: "after" }
+    //   { returnDocument: "after", runValidators: true }
     // );
     // if (!updatedRepair) return res.status(404).json("Reparación no encontrada");
     // return res.json(updatedRepair);
