@@ -50,7 +50,7 @@ const putPurchase = async (req: Request, res: Response) => {
           type: data.type,
         },
       },
-      { returnDocument: "after" }
+      { returnDocument: "after", runValidators: true }
     );
     if (!updatedPurchase) return res.status(404).json("Compra no encontrada");
     return res.json(updatedPurchase);

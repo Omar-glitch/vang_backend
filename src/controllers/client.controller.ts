@@ -1,10 +1,20 @@
 import { Request, Response } from "express";
-import Client from "../models/client";
+import Client, { ClientDocument } from "../models/client";
 import getErrorMessage from "../utils/errors";
+import { FilterQuery } from "mongoose";
+
+const clientFilter = (req: Request): FilterQuery<ClientDocument> => {
+  const q = req.query.q;
+  if (q && typeof q === "string" && q.trim().length > 1 && q.trim().length < 16)
+    return { name: { $regex: q.toLowerCase() } };
+  return {};
+};
 
 const getClients = async (req: Request, res: Response) => {
   try {
-    const clients = await Client.find();
+    const clients = await Client.find(clientFilter(req)).sort({
+      _id: req.query.order === "asc" ? 1 : -1,
+    });
     return res.json(clients);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
@@ -48,7 +58,7 @@ const putClient = async (req: Request, res: Response) => {
           contact: data.contact,
         },
       },
-      { returnDocument: "after" }
+      { returnDocument: "after", runValidators: true }
     );
     if (!updatedClient) return res.status(404).json("Cliente no encontrado");
     return res.json(updatedClient);

@@ -1,4 +1,10 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export type PurchaseDocument = Document & {
+  type: string;
+  description: string;
+  cost: number;
+};
 
 const purchaseSchema = new Schema(
   {

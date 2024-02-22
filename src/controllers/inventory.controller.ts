@@ -57,7 +57,7 @@ const putInventory = async (req: Request, res: Response) => {
           min: data.min,
         },
       },
-      { returnDocument: "after" }
+      { returnDocument: "after", runValidators: true }
     );
     if (!updatedInventory)
       return res.status(404).json("Inventario no encontrado");

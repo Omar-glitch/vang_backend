@@ -56,7 +56,7 @@ const putEmployee = async (req: Request, res: Response) => {
           role: data.role,
         },
       },
-      { returnDocument: "after" }
+      { returnDocument: "after", runValidators: true }
     );
     if (!updatedEmployee) return res.status(404).json("Empleado no encontrado");
     return res.json(updatedEmployee);

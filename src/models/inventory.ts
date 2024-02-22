@@ -1,4 +1,12 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export type InventoryDocument = Document & {
+  name: string;
+  description: string;
+  type: string;
+  stock: number;
+  min: number;
+};
 
 const inventorySchema = new Schema(
   {
