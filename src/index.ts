@@ -8,6 +8,7 @@ import repairRouter from "./routes/repair.routes";
 import inventoryRouter from "./routes/inventory.routes";
 import billRouter from "./routes/bill.routes";
 import purchaseRouter from "./routes/purchase.routes";
+import hardwareRouter from "./routes/hardware.route";
 
 const PORT = process.env.PORT;
 if (!PORT) throw new Error("No port in .env");
@@ -23,6 +24,7 @@ app.use("/repairs", repairRouter);
 app.use("/inventories", inventoryRouter);
 app.use("/bills", billRouter);
 app.use("/purchases", purchaseRouter);
+app.use("/hardwares", hardwareRouter);
 
 connectToDatabase()
   .then((db) => {

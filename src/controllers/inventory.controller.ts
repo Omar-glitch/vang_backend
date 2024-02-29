@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Inventory from "../models/inventory";
+import Inventory, { InventoryDocument } from "../models/inventory";
 import getErrorMessage from "../utils/errors";
 
 const getInventories = async (req: Request, res: Response) => {
