@@ -65,7 +65,8 @@ const deleteRepair = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const repairToDelete = await Repair.findByIdAndDelete(id);
-    if (!repairToDelete) res.status(404).json("Reparación no encontrada");
+    if (!repairToDelete)
+      return res.status(404).json("Reparación no encontrada");
     return res.json(repairToDelete);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

@@ -71,7 +71,7 @@ const deleteClient = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const clientToDelete = await Client.findByIdAndDelete(id);
-    if (!clientToDelete) res.status(404).json("Cliente no encontrado");
+    if (!clientToDelete) return res.status(404).json("Cliente no encontrado");
     return res.json(clientToDelete);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
