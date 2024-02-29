@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Inventory from "../models/inventory";
+import Inventory, { InventoryDocument } from "../models/inventory";
 import getErrorMessage from "../utils/errors";
 
 const getInventories = async (req: Request, res: Response) => {
@@ -71,7 +71,8 @@ const deleteInventory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const inventoryToDelete = await Inventory.findByIdAndDelete(id);
-    if (!inventoryToDelete) res.status(404).json("Inventario no encontrado");
+    if (!inventoryToDelete)
+      return res.status(404).json("Inventario no encontrado");
     return res.json(inventoryToDelete);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

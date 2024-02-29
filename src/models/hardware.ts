@@ -1,15 +1,14 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-export type InventoryDocument = Document & {
+export type HardwareDocument = Document & {
   name: string;
   description: string;
-  type: string;
   stock: number;
   cost: number;
-  min: number;
+  priority: string;
 };
 
-const inventorySchema = new Schema(
+const hardwareSchema = new Schema(
   {
     name: {
       type: String,
@@ -26,22 +25,12 @@ const inventorySchema = new Schema(
       minLength: 8,
       maxLength: 54,
     },
-    type: {
-      type: String,
-      required: true,
-      enum: [
-        "batería",
-        "centro de carga",
-        "pantalla",
-        "tapa trasera",
-        "micrófono",
-        "placa madre",
-        "circuitos integrados",
-      ],
-    },
     cost: { type: Number, required: true, min: 20, max: 120_000 },
     stock: { type: Number, required: true, min: 0, max: 2_500 },
-    min: { type: Number, required: true, min: 0, max: 2_500 },
+    priority: {
+      type: String,
+      enum: ["poco", "medio", "mucho", "indispensable"],
+    },
   },
   {
     versionKey: false,
@@ -49,5 +38,5 @@ const inventorySchema = new Schema(
   }
 );
 
-const Inventory = mongoose.model("Inventory", inventorySchema);
-export default Inventory;
+const hardware = mongoose.model("hardware", hardwareSchema);
+export default hardware;
