@@ -63,7 +63,7 @@ const deletePurchase = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const purchaseToDelete = await Purchase.findByIdAndDelete(id);
-    if (!purchaseToDelete) res.status(404).json("Compra no encontrada");
+    if (!purchaseToDelete) return res.status(404).json("Compra no encontrada");
     return res.json(purchaseToDelete);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

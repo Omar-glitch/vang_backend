@@ -63,7 +63,7 @@ const deleteBill = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const billToDelete = await Bill.findByIdAndDelete(id);
-    if (!billToDelete) res.status(404).json("Factura no encontrada");
+    if (!billToDelete) return res.status(404).json("Factura no encontrada");
     return res.json(billToDelete);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
