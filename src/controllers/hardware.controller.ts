@@ -31,6 +31,7 @@ const postHardware = async (req: Request, res: Response) => {
       type: data.type,
       stock: data.stock,
       cost: data.cost,
+      priority: data.priority,
       min: data.min,
     });
     await newHardware.save();
@@ -53,6 +54,7 @@ const putHardware = async (req: Request, res: Response) => {
           type: data.type,
           stock: data.stock,
           cost: data.cost,
+          priority: data.priority,
           min: data.min,
         },
       },

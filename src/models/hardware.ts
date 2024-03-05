@@ -29,6 +29,7 @@ const hardwareSchema = new Schema(
     stock: { type: Number, required: true, min: 0, max: 2_500 },
     priority: {
       type: String,
+      required: true,
       enum: ["poco", "medio", "mucho", "indispensable"],
     },
   },
