@@ -50,8 +50,8 @@ const repairSchema = new Schema(
       enum: REPAIR_TYPES,
     },
     id_inventory: { type: Schema.Types.ObjectId, required: true },
-    inventory_amount: { type: Number, required: true },
-    inventory_cost: { type: Number, required: true },
+    inventory_amount: { type: Number, required: true, min: 1, max: 8 },
+    inventory_cost: { type: Number, required: true, min: 20, max: 120_000 },
     id_employee: { type: Schema.Types.ObjectId, requred: true },
     id_client: {
       type: Schema.Types.ObjectId,
