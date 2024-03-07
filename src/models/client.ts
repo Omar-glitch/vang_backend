@@ -14,6 +14,7 @@ const clientSchema = new Schema(
       lowercase: true,
       minLength: 3,
       maxLength: 32,
+      unique: true,
     },
     contact: {
       type: String,

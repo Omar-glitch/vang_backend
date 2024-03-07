@@ -28,6 +28,7 @@ const inventorySchema = new Schema(
       lowercase: true,
       minLength: 3,
       maxLength: 32,
+      unique: true,
     },
     description: {
       type: String,

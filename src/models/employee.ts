@@ -20,6 +20,7 @@ const employeeSchema = new Schema(
       lowercase: true,
       minLength: 3,
       maxLength: 32,
+      unique: true,
     },
     email: {
       type: String,
