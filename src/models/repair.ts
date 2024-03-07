@@ -5,9 +5,9 @@ export type RepairDocument = Document & {
   description: string;
   status: string;
   type: string;
-  id_employee: Schema.Types.ObjectId;
-  id_client: Schema.Types.ObjectId;
-  id_inventory: Schema.Types.ObjectId;
+  employee: Schema.Types.ObjectId;
+  client: Schema.Types.ObjectId;
+  inventory: Schema.Types.ObjectId;
   inventory_amount: number;
   inventory_cost: number;
 };
@@ -35,8 +35,8 @@ const repairSchema = new Schema(
     description: {
       type: String,
       required: true,
-      min: 8,
-      max: 120,
+      minLength: 8,
+      maxLength: 120,
       trim: true,
     },
     status: {
@@ -49,12 +49,14 @@ const repairSchema = new Schema(
       required: true,
       enum: REPAIR_TYPES,
     },
-    id_inventory: { type: Schema.Types.ObjectId, required: true },
+    inventory: { type: String, required: true, minLength: 3, maxLength: 32 },
     inventory_amount: { type: Number, required: true, min: 1, max: 8 },
-    id_employee: { type: Schema.Types.ObjectId, requred: true },
-    id_client: {
-      type: Schema.Types.ObjectId,
+    employee: { type: String, requred: true, minLength: 3, maxLength: 32 },
+    client: {
+      type: String,
       required: true,
+      minLength: 3,
+      maxLength: 32,
     },
   },
   {

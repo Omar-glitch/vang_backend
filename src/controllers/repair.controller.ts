@@ -20,12 +20,12 @@ const repairFilter = (req: Request): FilterQuery<RepairDocument> => {
     return { type: { $regex: q.toLowerCase() } };
   if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
     return { _id: req.query._id };
-  if (validStrQuery(req.query.id_repairer, { minLength: 24, maxLength: 24 }))
-    return { _id: req.query.id_repairer };
-  if (validStrQuery(req.query.id_client, { minLength: 24, maxLength: 24 }))
-    return { _id: req.query.id_client };
-  if (validStrQuery(req.query.id_inventory, { minLength: 24, maxLength: 24 }))
-    return { _id: req.query.id_inventory };
+  if (validStrQuery(req.query.repairer, { minLength: 3, maxLength: 32 }))
+    return { _id: req.query.repairer };
+  if (validStrQuery(req.query.client, { minLength: 3, maxLength: 32 }))
+    return { _id: req.query.client };
+  if (validStrQuery(req.query.inventory, { minLength: 3, maxLength: 32 }))
+    return { _id: req.query.inventory };
   const filter: FilterQuery<RepairDocument> = {};
   if (validEnumQuery(req.query.status, REPAIR_STATUS))
     filter.status = req.query.status;
@@ -72,9 +72,9 @@ const postRepair = async (req: Request, res: Response) => {
       description: data.description,
       status: data.status,
       type: data.type,
-      id_employee: data.id_employee,
-      id_client: data.id_client,
-      id_inventory: data.id_inventory,
+      id_employee: data.employee,
+      id_client: data.client,
+      id_inventory: data.inventory,
       inventory_amount: data.inventory_amount,
       inventory_cost: data.inventory_cost,
     });
@@ -97,9 +97,9 @@ const putRepair = async (req: Request, res: Response) => {
           description: data.description,
           status: data.status,
           type: data.type,
-          id_employee: data.id_employee,
-          id_client: data.id_client,
-          id_inventory: data.id_inventory,
+          id_employee: data.employee,
+          id_client: data.client,
+          id_inventory: data.inventory,
           inventory_amount: data.inventory_amount,
           inventory_cost: data.inventory_cost,
         },
