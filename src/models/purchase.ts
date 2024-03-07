@@ -6,6 +6,8 @@ export type PurchaseDocument = Document & {
   cost: number;
 };
 
+export const PURCHASE_TYPES = ["inventario", "equipo"];
+
 const purchaseSchema = new Schema(
   {
     type: {
@@ -13,7 +15,7 @@ const purchaseSchema = new Schema(
       required: true,
       trim: true,
       lowercase: true,
-      enum: ["inventario", "equipo"],
+      enum: PURCHASE_TYPES,
       minLength: 3,
       maxLength: 32,
     },
@@ -33,6 +35,7 @@ const purchaseSchema = new Schema(
   },
   {
     versionKey: false,
+    timestamps: true,
   }
 );
 

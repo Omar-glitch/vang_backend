@@ -1,10 +1,40 @@
 import { Request, Response } from "express";
-import Bill from "../models/bill";
+import Bill, { BillDocument } from "../models/bill";
 import getErrorMessage from "../utils/errors";
+import {
+  rangeDateQuery,
+  rangeQuery,
+  validOrderQuery,
+  validStrQuery,
+} from "../utils/query";
+import { FilterQuery } from "mongoose";
+
+const billFilter = (req: Request): FilterQuery<BillDocument> => {
+  if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
+    return { _id: req.query._id };
+  if (validStrQuery(req.query.id_repair, { minLength: 24, maxLength: 24 }))
+    return { id_repair: req.query.id_repair };
+  const filter: FilterQuery<BillDocument> = {};
+  rangeQuery(
+    req.query.minAmount,
+    req.query.maxAmount,
+    { min: 20, max: 1_000_000 },
+    "amount",
+    filter
+  );
+  rangeDateQuery(req.query.minDate, req.query.maxDate, "createdAt", filter);
+  if (req.query.paid) {
+    if (req.query.paid === "true") filter.paid = true;
+    if (req.query.paid === "false") filter.paid = false;
+  }
+  return filter;
+};
 
 const getBills = async (req: Request, res: Response) => {
   try {
-    const bills = await Bill.find();
+    const bills = await Bill.find(billFilter(req)).sort({
+      _id: validOrderQuery(req.query.order),
+    });
     return res.json(bills);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
