@@ -21,11 +21,11 @@ const repairFilter = (req: Request): FilterQuery<RepairDocument> => {
   if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
     return { _id: req.query._id };
   if (validStrQuery(req.query.repairer, { minLength: 3, maxLength: 32 }))
-    return { _id: req.query.repairer };
+    return { repairer: req.query.repairer };
   if (validStrQuery(req.query.client, { minLength: 3, maxLength: 32 }))
-    return { _id: req.query.client };
+    return { client: req.query.client };
   if (validStrQuery(req.query.inventory, { minLength: 3, maxLength: 32 }))
-    return { _id: req.query.inventory };
+    return { inventory: req.query.inventory };
   const filter: FilterQuery<RepairDocument> = {};
   if (validEnumQuery(req.query.status, REPAIR_STATUS))
     filter.status = req.query.status;
@@ -72,9 +72,9 @@ const postRepair = async (req: Request, res: Response) => {
       description: data.description,
       status: data.status,
       type: data.type,
-      id_employee: data.employee,
-      id_client: data.client,
-      id_inventory: data.inventory,
+      employee: data.employee,
+      client: data.client,
+      inventory: data.inventory,
       inventory_amount: data.inventory_amount,
       inventory_cost: data.inventory_cost,
     });
@@ -97,9 +97,9 @@ const putRepair = async (req: Request, res: Response) => {
           description: data.description,
           status: data.status,
           type: data.type,
-          id_employee: data.employee,
-          id_client: data.client,
-          id_inventory: data.inventory,
+          employee: data.employee,
+          client: data.client,
+          inventory: data.inventory,
           inventory_amount: data.inventory_amount,
           inventory_cost: data.inventory_cost,
         },
