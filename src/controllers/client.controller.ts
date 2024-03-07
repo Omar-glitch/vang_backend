@@ -2,18 +2,21 @@ import { Request, Response } from "express";
 import Client, { ClientDocument } from "../models/client";
 import getErrorMessage from "../utils/errors";
 import { FilterQuery } from "mongoose";
+import { validOrderQuery, validStrQuery } from "../utils/query";
 
 const clientFilter = (req: Request): FilterQuery<ClientDocument> => {
   const q = req.query.q;
-  if (q && typeof q === "string" && q.trim().length > 1 && q.trim().length < 16)
+  if (validStrQuery(q, { minLength: 2, maxLength: 16 }))
     return { name: { $regex: q.toLowerCase() } };
+  if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
+    return { _id: req.query._id };
   return {};
 };
 
 const getClients = async (req: Request, res: Response) => {
   try {
     const clients = await Client.find(clientFilter(req)).sort({
-      _id: req.query.order === "asc" ? 1 : -1,
+      _id: validOrderQuery(req.query.order),
     });
     return res.json(clients);
   } catch (e) {

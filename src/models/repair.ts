@@ -5,33 +5,23 @@ export type RepairDocument = Document & {
   description: string;
   status: string;
   type: string;
-  id_empleado: Schema.Types.ObjectId;
-  id_cliente: Schema.Types.ObjectId;
-  item: {
-    id_item: Schema.Types.ObjectId;
-    amount: number;
-    cost: number;
-  };
+  id_employee: Schema.Types.ObjectId;
+  id_client: Schema.Types.ObjectId;
+  id_inventory: Schema.Types.ObjectId;
+  inventory_amount: number;
+  inventory_cost: number;
 };
 
-const Item = new Schema({
-  id_item: {
-    type: Schema.Types.ObjectId,
-    required: true,
-  },
-  amount: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 100,
-    set: (v: number) => Math.round(v),
-  },
-  cost: {
-    type: Number,
-    required: true,
-    set: (v: number) => Math.round(v),
-  },
-});
+export const REPAIR_STATUS = ["no iniciado", "en progreso", "finalizado"];
+export const REPAIR_TYPES = [
+  "batería",
+  "centro de carga",
+  "pantalla",
+  "tapa trasera",
+  "micrófono",
+  "placa madre",
+  "circuitos integrados",
+];
 
 const repairSchema = new Schema(
   {
@@ -52,29 +42,18 @@ const repairSchema = new Schema(
     status: {
       type: String,
       required: true,
-      enum: ["no iniciado", "en progreso", "finalizado"],
+      enum: REPAIR_STATUS,
     },
     type: {
       type: String,
       required: true,
-      enum: [
-        "batería",
-        "centro de carga",
-        "pantalla",
-        "tapa trasera",
-        "micrófono",
-        "placa madre",
-        "circuitos integrados",
-        "activación",
-      ],
+      enum: REPAIR_TYPES,
     },
-    items: {
-      type: [Item],
-      min: 1,
-      max: 5,
-    },
-    id_empleado: { type: Schema.Types.ObjectId },
-    id_cliente: {
+    id_inventory: { type: Schema.Types.ObjectId, required: true },
+    inventory_amount: { type: Number, required: true },
+    inventory_cost: { type: Number, required: true },
+    id_employee: { type: Schema.Types.ObjectId, requred: true },
+    id_client: {
       type: Schema.Types.ObjectId,
       required: true,
     },

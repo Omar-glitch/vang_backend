@@ -8,6 +8,8 @@ export type HardwareDocument = Document & {
   priority: string;
 };
 
+export const HARDWARE_PRIORITIES = ["poco", "medio", "mucho", "indispensable"];
+
 const hardwareSchema = new Schema(
   {
     name: {
@@ -30,7 +32,7 @@ const hardwareSchema = new Schema(
     priority: {
       type: String,
       required: true,
-      enum: ["poco", "medio", "mucho", "indispensable"],
+      enum: HARDWARE_PRIORITIES,
     },
   },
   {

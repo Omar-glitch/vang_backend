@@ -9,6 +9,8 @@ export type EmployeeDocument = Document & {
   direction: string;
 };
 
+export const EMPLOYEE_ROLES = ["reparador", "finanzas", "admin", "user"];
+
 const employeeSchema = new Schema(
   {
     name: {
@@ -30,7 +32,7 @@ const employeeSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: ["reparador", "finanzas", "admin", "user"],
+      enum: EMPLOYEE_ROLES,
     },
     phone: {
       type: String,

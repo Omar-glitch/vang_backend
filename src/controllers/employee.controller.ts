@@ -1,10 +1,39 @@
 import { Request, Response } from "express";
-import Employee from "../models/employee";
+import Employee, { EMPLOYEE_ROLES, EmployeeDocument } from "../models/employee";
 import getErrorMessage from "../utils/errors";
+import {
+  rangeQuery,
+  validEnumQuery,
+  validNumberQuery,
+  validOrderQuery,
+  validStrQuery,
+} from "../utils/query";
+import { FilterQuery } from "mongoose";
+
+const employeeFilter = (req: Request): FilterQuery<EmployeeDocument> => {
+  const q = req.query.q;
+  if (validStrQuery(q, { minLength: 2, maxLength: 16 }))
+    return { name: { $regex: q.toLowerCase() } };
+  if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
+    return { _id: req.query._id };
+  let filter: FilterQuery<EmployeeDocument> = {};
+  if (validEnumQuery(req.query.role, EMPLOYEE_ROLES))
+    filter["role"] = req.query.role;
+  rangeQuery(
+    req.query.minAge,
+    req.query.maxAge,
+    { min: 16, max: 80 },
+    "age",
+    filter
+  );
+  return filter;
+};
 
 const getEmployees = async (req: Request, res: Response) => {
   try {
-    const employees = await Employee.find();
+    const employees = await Employee.find(employeeFilter(req)).sort({
+      _id: validOrderQuery(req.query.order),
+    });
     return res.json(employees);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

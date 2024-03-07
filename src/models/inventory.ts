@@ -9,6 +9,16 @@ export type InventoryDocument = Document & {
   min: number;
 };
 
+export const INVENTORY_TYPES = [
+  "batería",
+  "centro de carga",
+  "pantalla",
+  "tapa trasera",
+  "micrófono",
+  "placa madre",
+  "circuitos integrados",
+];
+
 const inventorySchema = new Schema(
   {
     name: {
@@ -29,15 +39,7 @@ const inventorySchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: [
-        "batería",
-        "centro de carga",
-        "pantalla",
-        "tapa trasera",
-        "micrófono",
-        "placa madre",
-        "circuitos integrados",
-      ],
+      enum: INVENTORY_TYPES,
     },
     cost: { type: Number, required: true, min: 20, max: 120_000 },
     stock: { type: Number, required: true, min: 0, max: 2_500 },
