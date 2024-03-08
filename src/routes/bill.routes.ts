@@ -7,8 +7,6 @@ billRouter.get("/", billCtrl.getBills);
 
 billRouter.get("/:id", billCtrl.getBill);
 
-billRouter.post("/", billCtrl.postBill);
-
 billRouter.put("/:id", billCtrl.putBill);
 
 billRouter.delete("/:id", billCtrl.deleteBill);

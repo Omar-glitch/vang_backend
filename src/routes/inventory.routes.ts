@@ -11,6 +11,8 @@ inventoryRouter.post("/", inventoryCtrl.postInventory);
 
 inventoryRouter.put("/:id", inventoryCtrl.putInventory);
 
+inventoryRouter.put("/add/:id", inventoryCtrl.putAddInventory);
+
 inventoryRouter.delete("/:id", inventoryCtrl.deleteInventory);
 
 export default inventoryRouter;

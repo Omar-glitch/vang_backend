@@ -47,40 +47,20 @@ const getPurchase = async (req: Request, res: Response) => {
   }
 };
 
-const postPurchase = async (req: Request, res: Response) => {
+const createPurchase = async (item: {
+  cost: number;
+  description: string;
+  type: "equipo" | "inventario";
+}) => {
   try {
-    const data = req.body;
     const newPurchase = new Purchase({
-      cost: data.cost,
-      description: data.description,
-      type: data.type,
+      cost: item.cost,
+      description: item.description,
+      type: item.type,
     });
     await newPurchase.save();
-    return res.json(newPurchase);
   } catch (e) {
-    return res.status(400).json(getErrorMessage(e));
-  }
-};
-
-const putPurchase = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const data = req.body;
-    const updatedPurchase = await Purchase.findByIdAndUpdate(
-      id,
-      {
-        $set: {
-          cost: data.cost,
-          description: data.description,
-          type: data.type,
-        },
-      },
-      { returnDocument: "after", runValidators: true }
-    );
-    if (!updatedPurchase) return res.status(404).json("Compra no encontrada");
-    return res.json(updatedPurchase);
-  } catch (e) {
-    return res.status(400).json(getErrorMessage(e));
+    console.log(getErrorMessage(e));
   }
 };
 
@@ -98,8 +78,7 @@ const deletePurchase = async (req: Request, res: Response) => {
 const purchaseCtrl = {
   getPurchases,
   getPurchase,
-  postPurchase,
-  putPurchase,
+  createPurchase,
   deletePurchase,
 };
 

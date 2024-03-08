@@ -12,6 +12,7 @@ import {
   validStrQuery,
 } from "../utils/query";
 import Purchase from "../models/purchase";
+import purchaseCtrl from "./purchase.controller";
 
 const inventoryFilter = (req: Request): FilterQuery<InventoryDocument> => {
   const q = req.query.q;
@@ -73,13 +74,14 @@ const postInventory = async (req: Request, res: Response) => {
       cost: data.cost,
       min: data.min,
     });
+    if (newInventory.stock > 80)
+      return res.json(400).json("Máximo 80 al crear de inventario");
     await newInventory.save();
-    const newPurchase = new Purchase({
-      cost: parseInt(data.cost) * parseInt(data.stock),
-      description: `Compra de ${data.stock} ${data.name}, ${data.cost} c/u`,
+    await purchaseCtrl.createPurchase({
+      cost: newInventory.cost * newInventory.stock,
+      description: `Compra de ${newInventory.stock} ${newInventory.name}, ${newInventory.cost} c/u`,
       type: "inventario",
     });
-    await newPurchase.save();
     return res.json(newInventory);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
@@ -112,6 +114,74 @@ const putInventory = async (req: Request, res: Response) => {
   }
 };
 
+const canDecrementInventory = async (
+  name: string,
+  amount: string
+): Promise<boolean> => {
+  try {
+    const valueToQuit = parseInt(amount);
+    if (!name) return false;
+    if (isNaN(valueToQuit)) return false;
+    if (valueToQuit < 1 || valueToQuit > 8) return false;
+    const inventory = await Inventory.findOne({ name });
+    if (!inventory) return false;
+    if (inventory.stock - valueToQuit < 0) return false;
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const putAddInventory = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+    const valueToAdd = parseInt(data.toAdd);
+    if (isNaN(valueToAdd))
+      return res.status(400).json("El valor a agregar es inválido");
+    if (valueToAdd <= 0) return res.status(400).json("El valor es menor que 1");
+    if (valueToAdd > 80)
+      return res.status(400).json("El valor es mayor que 80");
+
+    const updatedInventory = await Inventory.findByIdAndUpdate(
+      id,
+      {
+        $inc: {
+          stock: valueToAdd,
+        },
+      },
+      { returnDocument: "after", runValidators: true }
+    );
+    if (!updatedInventory)
+      return res.status(404).json("Inventario no encontrado");
+    await purchaseCtrl.createPurchase({
+      cost: updatedInventory.cost * valueToAdd,
+      description: `Compra de ${valueToAdd} ${updatedInventory.name}, ${updatedInventory.cost} c/u`,
+      type: "inventario",
+    });
+    return res.json(updatedInventory);
+  } catch (e) {
+    return res.status(400).json(getErrorMessage(e));
+  }
+};
+
+const putDecrementInventory = async (repair: any) => {
+  try {
+    const updatedInventory = await Inventory.findOneAndUpdate(
+      { name: repair.inventory },
+      {
+        $inc: {
+          stock: -repair.inventory_amount,
+        },
+      },
+      { returnDocument: "after", runValidators: true }
+    );
+    if (!updatedInventory) console.log("No hay inventario");
+  } catch (e) {
+    console.log(getErrorMessage(e));
+  }
+};
+
 const deleteInventory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -129,6 +199,9 @@ const inventoryCtrl = {
   getInventory,
   postInventory,
   putInventory,
+  canDecrementInventory,
+  putAddInventory,
+  putDecrementInventory,
   deleteInventory,
 };
 
