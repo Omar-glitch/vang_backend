@@ -4,10 +4,12 @@ import getErrorMessage from "../utils/errors";
 import {
   rangeDateQuery,
   rangeQuery,
+  validEnumQuery,
   validOrderQuery,
   validStrQuery,
 } from "../utils/query";
-import { FilterQuery } from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
+import { REPAIR_TYPES } from "../models/repair";
 
 const billFilter = (req: Request): FilterQuery<BillDocument> => {
   if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
@@ -15,6 +17,8 @@ const billFilter = (req: Request): FilterQuery<BillDocument> => {
   if (validStrQuery(req.query.id_repair, { minLength: 24, maxLength: 24 }))
     return { id_repair: req.query.id_repair };
   const filter: FilterQuery<BillDocument> = {};
+  if (validEnumQuery(req.query.type, REPAIR_TYPES))
+    filter.type = req.query.type;
   rangeQuery(
     req.query.minAmount,
     req.query.maxAmount,
@@ -52,18 +56,36 @@ const getBill = async (req: Request, res: Response) => {
   }
 };
 
-const postBill = async (req: Request, res: Response) => {
+const createBill = async (repair: any) => {
   try {
-    const data = req.body;
     const newBill = new Bill({
-      amount: data.amount,
-      paid: data.paid,
-      id_repair: data.id_repair,
+      amount: repair.price,
+      description: repair.description,
+      paid: false,
+      type: repair.type,
+      id_repair: repair._id,
     });
     await newBill.save();
-    return res.json(newBill);
   } catch (e) {
-    return res.status(400).json(getErrorMessage(e));
+    console.log(getErrorMessage(e));
+  }
+};
+
+const updateBill = async (repair: any) => {
+  try {
+    const updatedBill = await Bill.findOneAndUpdate(
+      { id_repair: new mongoose.Types.ObjectId(repair._id) },
+      {
+        $set: {
+          description: repair.description,
+          amount: repair.price,
+        },
+      },
+      { returnDocument: "after", runValidators: true }
+    );
+    if (!updatedBill) await createBill(repair);
+  } catch (e) {
+    console.log(getErrorMessage(e));
   }
 };
 
@@ -75,9 +97,7 @@ const putBill = async (req: Request, res: Response) => {
       id,
       {
         $set: {
-          amount: data.amount,
           paid: data.paid,
-          id_repair: data.id_repair,
         },
       },
       { returnDocument: "after", runValidators: true }
@@ -103,7 +123,8 @@ const deleteBill = async (req: Request, res: Response) => {
 const billCtrl = {
   getBills,
   getBill,
-  postBill,
+  createBill,
+  updateBill,
   putBill,
   deleteBill,
 };

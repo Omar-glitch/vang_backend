@@ -12,6 +12,7 @@ import {
   validStrQuery,
 } from "../utils/query";
 import Purchase from "../models/purchase";
+import purchaseCtrl from "./purchase.controller";
 
 const hardwareFilter = (req: Request): FilterQuery<HardwareDocument> => {
   const q = req.query.q;
@@ -73,13 +74,14 @@ const postHardware = async (req: Request, res: Response) => {
       priority: data.priority,
       min: data.min,
     });
+    if (newHardware.stock > 80)
+      return res.status(400).json("Máximo 80 al crear de equipo");
     await newHardware.save();
-    const newPurchase = new Purchase({
-      cost: parseInt(data.cost) * parseInt(data.stock),
-      description: `Compra de ${data.stock} ${data.name}, ${data.cost} c/u`,
+    await purchaseCtrl.createPurchase({
+      cost: newHardware.cost * newHardware.stock,
+      description: `Compra de ${newHardware.stock} ${newHardware.name}, ${newHardware.cost} c/u`,
       type: "equipo",
     });
-    await newPurchase.save();
     return res.json(newHardware);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
@@ -112,6 +114,38 @@ const putHardware = async (req: Request, res: Response) => {
   }
 };
 
+const putAddHardware = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+    const valueToAdd = parseInt(data.toAdd);
+    if (isNaN(valueToAdd))
+      return res.status(400).json("El valor a agregar es inválido");
+    if (valueToAdd <= 0) return res.status(400).json("El valor es menor que 1");
+    if (valueToAdd > 80)
+      return res.status(400).json("El valor es mayor que 80");
+
+    const updatedHardware = await Hardware.findByIdAndUpdate(
+      id,
+      {
+        $inc: {
+          stock: valueToAdd,
+        },
+      },
+      { returnDocument: "after", runValidators: true }
+    );
+    if (!updatedHardware) return res.status(404).json("Equipo no encontrado");
+    await purchaseCtrl.createPurchase({
+      cost: updatedHardware.cost * valueToAdd,
+      description: `Compra de ${valueToAdd} ${updatedHardware.name}, ${updatedHardware.cost} c/u`,
+      type: "equipo",
+    });
+    return res.json(updatedHardware);
+  } catch (e) {
+    return res.status(400).json(getErrorMessage(e));
+  }
+};
+
 const deleteHardware = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -128,6 +162,7 @@ const hardwareCtrl = {
   getHardware,
   postHardware,
   putHardware,
+  putAddHardware,
   deleteHardware,
 };
 

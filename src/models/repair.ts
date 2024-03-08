@@ -9,7 +9,6 @@ export type RepairDocument = Document & {
   client: Schema.Types.ObjectId;
   inventory: Schema.Types.ObjectId;
   inventory_amount: number;
-  inventory_cost: number;
 };
 
 export const REPAIR_STATUS = ["no iniciado", "en progreso", "finalizado"];

@@ -7,10 +7,6 @@ purchaseRouter.get("/", purchaseCtrl.getPurchases);
 
 purchaseRouter.get("/:id", purchaseCtrl.getPurchase);
 
-purchaseRouter.post("/", purchaseCtrl.postPurchase);
-
-purchaseRouter.put("/:id", purchaseCtrl.putPurchase);
-
 purchaseRouter.delete("/:id", purchaseCtrl.deletePurchase);
 
 export default purchaseRouter;

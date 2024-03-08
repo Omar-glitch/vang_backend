@@ -13,6 +13,10 @@ import {
   validOrderQuery,
   validStrQuery,
 } from "../utils/query";
+import Bill from "../models/bill";
+import mongoose from "mongoose";
+import billCtrl from "./bill.controller";
+import inventoryCtrl from "./inventory.controller";
 
 const repairFilter = (req: Request): FilterQuery<RepairDocument> => {
   const q = req.query.q;
@@ -67,6 +71,11 @@ const getRepair = async (req: Request, res: Response) => {
 const postRepair = async (req: Request, res: Response) => {
   try {
     const data = req.body;
+    const canDelInventory = await inventoryCtrl.canDecrementInventory(
+      data.inventory,
+      data.inventory_amount
+    );
+    if (!canDelInventory) return res.status(404).json("Poco inventario");
     const newRepair = new Repair({
       price: data.price,
       description: data.description,
@@ -76,9 +85,10 @@ const postRepair = async (req: Request, res: Response) => {
       client: data.client,
       inventory: data.inventory,
       inventory_amount: data.inventory_amount,
-      inventory_cost: data.inventory_cost,
     });
     await newRepair.save();
+    await inventoryCtrl.putDecrementInventory(newRepair);
+    await billCtrl.createBill(newRepair);
     return res.json(newRepair);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
@@ -89,6 +99,7 @@ const putRepair = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = req.body;
+
     const updatedRepair = await Repair.findByIdAndUpdate(
       id,
       {
@@ -107,7 +118,20 @@ const putRepair = async (req: Request, res: Response) => {
       { returnDocument: "after", runValidators: true }
     );
     if (!updatedRepair) return res.status(404).json("Reparación no encontrada");
+    await billCtrl.updateBill(updatedRepair);
     return res.json(updatedRepair);
+  } catch (e) {
+    return res.status(400).json(getErrorMessage(e));
+  }
+};
+
+const putGenerateBillRepair = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const repair = await Repair.findById(id);
+    if (!repair) return res.status(404).json("Reparación no encontrada");
+    await billCtrl.updateBill(repair);
+    return res.json(repair);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
   }
@@ -130,6 +154,7 @@ const repairCtrl = {
   getRepair,
   postRepair,
   putRepair,
+  putGenerateBillRepair,
   deleteRepair,
 };
 

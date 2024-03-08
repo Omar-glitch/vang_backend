@@ -11,6 +11,8 @@ hardwareRouter.post("/", hardwareCtrl.postHardware);
 
 hardwareRouter.put("/:id", hardwareCtrl.putHardware);
 
+hardwareRouter.put("/add/:id", hardwareCtrl.putAddHardware);
+
 hardwareRouter.delete("/:id", hardwareCtrl.deleteHardware);
 
 export default hardwareRouter;
