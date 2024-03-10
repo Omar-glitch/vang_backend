@@ -7,7 +7,7 @@ import Repair, {
 import getErrorMessage from "../utils/errors";
 import { FilterQuery } from "mongoose";
 import {
-  rangeDateQuery,
+  rangeDateQueryId,
   rangeQuery,
   validEnumQuery,
   validOrderQuery,
@@ -40,7 +40,7 @@ const repairFilter = (req: Request): FilterQuery<RepairDocument> => {
     "price",
     filter
   );
-  rangeDateQuery(req.query.minDate, req.query.maxDate, "createdAt", filter);
+  rangeDateQueryId(req.query.minDate, req.query.maxDate, "_id", filter);
   return filter;
 };
 

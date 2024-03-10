@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Bill, { BillDocument } from "../models/bill";
 import getErrorMessage from "../utils/errors";
 import {
-  rangeDateQuery,
+  rangeDateQueryId,
   rangeQuery,
   validEnumQuery,
   validOrderQuery,
@@ -29,7 +29,7 @@ const billFilter = (req: Request): FilterQuery<BillDocument> => {
     "amount",
     filter
   );
-  rangeDateQuery(req.query.minDate, req.query.maxDate, "createdAt", filter);
+  rangeDateQueryId(req.query.minDate, req.query.maxDate, "_id", filter);
   if (req.query.paid) {
     if (req.query.paid === "true") filter.paid = true;
     if (req.query.paid === "false") filter.paid = false;

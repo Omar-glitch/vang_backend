@@ -1,3 +1,6 @@
+import moment from "moment";
+import mongoose from "mongoose";
+
 export const validStrQuery = (
   item: unknown,
   { minLength, maxLength }: { minLength: number; maxLength: number }
@@ -65,5 +68,33 @@ export const rangeDateQuery = (
     filter[fieldName] = {};
     if (!isNaN(min.valueOf())) filter[fieldName]["$gte"] = minDate;
     if (!isNaN(max.valueOf())) filter[fieldName]["$lte"] = maxDate;
+  }
+};
+
+export const rangeDateQueryId = (
+  minDate: unknown,
+  maxDate: unknown,
+  fieldName: string,
+  filter: any
+) => {
+  const min = new Date(minDate as string);
+  const max = new Date(maxDate as string);
+  if (!isNaN(min.valueOf()) || !isNaN(max.valueOf())) {
+    if (!isNaN(min.valueOf()) && !isNaN(max.valueOf())) if (min > max) return;
+    filter[fieldName] = {};
+    if (!isNaN(min.valueOf()))
+      filter[fieldName]["$gte"] = mongoose.Types.ObjectId.createFromTime(
+        moment(minDate as string)
+          .startOf("day")
+          .toDate()
+          .getTime() / 1000
+      );
+    if (!isNaN(max.valueOf()))
+      filter[fieldName]["$lte"] = mongoose.Types.ObjectId.createFromTime(
+        moment(maxDate as string)
+          .endOf("day")
+          .toDate()
+          .getTime() / 1000
+      );
   }
 };
