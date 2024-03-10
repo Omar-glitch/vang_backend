@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Purchase, { PURCHASE_TYPES, PurchaseDocument } from "../models/purchase";
 import getErrorMessage from "../utils/errors";
 import {
-  rangeDateQuery,
+  rangeDateQueryId,
   rangeQuery,
   validEnumQuery,
   validOrderQuery,
@@ -26,7 +26,7 @@ const purchaseFilter = (req: Request): FilterQuery<PurchaseDocument> => {
     "cost",
     filter
   );
-  rangeDateQuery(req.query.minDate, req.query.maxDate, "createdAt", filter);
+  rangeDateQueryId(req.query.minDate, req.query.maxDate, "_id", filter);
   return filter;
 };
 

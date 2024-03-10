@@ -4,11 +4,11 @@ import getErrorMessage from "../utils/errors";
 import {
   rangeQuery,
   validEnumQuery,
-  validNumberQuery,
   validOrderQuery,
   validStrQuery,
 } from "../utils/query";
 import { FilterQuery } from "mongoose";
+import Repair from "../models/repair";
 
 const employeeFilter = (req: Request): FilterQuery<EmployeeDocument> => {
   const q = req.query.q;
@@ -73,8 +73,11 @@ const putEmployee = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = req.body;
-    const updatedEmployee = await Employee.findByIdAndUpdate(
-      id,
+    const employeeToUpdate = await Employee.findById(id);
+    if (!employeeToUpdate)
+      return res.status(404).json("Empleado no encontrado");
+    const updatedEmployee = await Employee.updateOne(
+      { _id: id },
       {
         $set: {
           name: data.name,
@@ -85,10 +88,17 @@ const putEmployee = async (req: Request, res: Response) => {
           role: data.role,
         },
       },
-      { returnDocument: "after", runValidators: true }
+      { runValidators: true }
     );
-    if (!updatedEmployee) return res.status(404).json("Empleado no encontrado");
-    return res.json(updatedEmployee);
+    if (!updatedEmployee.modifiedCount)
+      return res.status(404).json("Empleado no encontrado");
+    if (employeeToUpdate.name !== data.name) {
+      await Repair.updateMany(
+        { employee: employeeToUpdate.name },
+        { $set: { employee: data.name } }
+      );
+    }
+    return res.json({});
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
   }

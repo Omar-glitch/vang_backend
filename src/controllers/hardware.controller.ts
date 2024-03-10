@@ -11,7 +11,6 @@ import {
   validOrderQuery,
   validStrQuery,
 } from "../utils/query";
-import Purchase from "../models/purchase";
 import purchaseCtrl from "./purchase.controller";
 
 const hardwareFilter = (req: Request): FilterQuery<HardwareDocument> => {

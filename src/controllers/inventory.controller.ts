@@ -11,8 +11,8 @@ import {
   validOrderQuery,
   validStrQuery,
 } from "../utils/query";
-import Purchase from "../models/purchase";
 import purchaseCtrl from "./purchase.controller";
+import Repair from "../models/repair";
 
 const inventoryFilter = (req: Request): FilterQuery<InventoryDocument> => {
   const q = req.query.q;
@@ -92,8 +92,12 @@ const putInventory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = req.body;
-    const updatedInventory = await Inventory.findByIdAndUpdate(
-      id,
+
+    const inventoryToUpdate = await Inventory.findById(id);
+    if (!inventoryToUpdate)
+      return res.status(404).json("Inventario no encontrado");
+    const updatedInventory = await Inventory.updateOne(
+      { _id: id },
       {
         $set: {
           name: data.name,
@@ -104,11 +108,15 @@ const putInventory = async (req: Request, res: Response) => {
           min: data.min,
         },
       },
-      { returnDocument: "after", runValidators: true }
+      { runValidators: true }
     );
-    if (!updatedInventory)
+    if (!updatedInventory.modifiedCount)
       return res.status(404).json("Inventario no encontrado");
-    return res.json(updatedInventory);
+    await Repair.updateMany(
+      { inventory: inventoryToUpdate.name },
+      { $set: { inventory: data.name } }
+    );
+    return res.json({});
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
   }

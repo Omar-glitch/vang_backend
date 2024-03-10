@@ -3,6 +3,7 @@ import Client, { ClientDocument } from "../models/client";
 import getErrorMessage from "../utils/errors";
 import { FilterQuery } from "mongoose";
 import { validOrderQuery, validStrQuery } from "../utils/query";
+import Repair from "../models/repair";
 
 const clientFilter = (req: Request): FilterQuery<ClientDocument> => {
   const q = req.query.q;
@@ -53,18 +54,27 @@ const putClient = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = req.body;
-    const updatedClient = await Client.findByIdAndUpdate(
-      id,
+    const clientToUpdate = await Client.findById(id);
+    if (!clientToUpdate) return res.status(404).json("Cliente no encontrado");
+    const updatedClient = await Client.updateOne(
+      { _id: id },
       {
         $set: {
           name: data.name,
           contact: data.contact,
         },
       },
-      { returnDocument: "after", runValidators: true }
+      { runValidators: true }
     );
-    if (!updatedClient) return res.status(404).json("Cliente no encontrado");
-    return res.json(updatedClient);
+    if (!updatedClient.modifiedCount)
+      return res.status(404).json("Cliente no encontrado");
+    if (data.name !== clientToUpdate.name) {
+      await Repair.updateMany(
+        { client: clientToUpdate.name },
+        { $set: { client: data.name } }
+      );
+    }
+    return res.json({});
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
   }
