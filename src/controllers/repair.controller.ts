@@ -13,24 +13,22 @@ import {
   validOrderQuery,
   validStrQuery,
 } from "../utils/query";
-import Bill from "../models/bill";
-import mongoose from "mongoose";
 import billCtrl from "./bill.controller";
 import inventoryCtrl from "./inventory.controller";
 
 const repairFilter = (req: Request): FilterQuery<RepairDocument> => {
   const q = req.query.q;
   if (validStrQuery(q, { minLength: 2, maxLength: 16 }))
-    return { type: { $regex: q.toLowerCase() } };
+    return { description: { $regex: q } };
   if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
     return { _id: req.query._id };
-  if (validStrQuery(req.query.repairer, { minLength: 3, maxLength: 32 }))
-    return { repairer: req.query.repairer };
-  if (validStrQuery(req.query.client, { minLength: 3, maxLength: 32 }))
-    return { client: req.query.client };
-  if (validStrQuery(req.query.inventory, { minLength: 3, maxLength: 32 }))
-    return { inventory: req.query.inventory };
   const filter: FilterQuery<RepairDocument> = {};
+  if (validStrQuery(req.query.employee, { minLength: 3, maxLength: 32 }))
+    filter.employee = req.query.employee;
+  if (validStrQuery(req.query.client, { minLength: 3, maxLength: 32 }))
+    filter.client = req.query.client;
+  if (validStrQuery(req.query.inventory, { minLength: 3, maxLength: 32 }))
+    filter.inventory = req.query.inventory;
   if (validEnumQuery(req.query.status, REPAIR_STATUS))
     filter.status = req.query.status;
   if (validEnumQuery(req.query.type, REPAIR_TYPES))

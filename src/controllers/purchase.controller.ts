@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Purchase, { PURCHASE_TYPES, PurchaseDocument } from "../models/purchase";
 import getErrorMessage from "../utils/errors";
 import {
+  rangeDateQuery,
   rangeQuery,
   validEnumQuery,
   validOrderQuery,
@@ -10,6 +11,9 @@ import {
 import { FilterQuery } from "mongoose";
 
 const purchaseFilter = (req: Request): FilterQuery<PurchaseDocument> => {
+  const q = req.query.q;
+  if (validStrQuery(q, { minLength: 2, maxLength: 16 }))
+    return { description: { $regex: q } };
   if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
     return { _id: req.query._id };
   const filter: FilterQuery<PurchaseDocument> = {};
@@ -22,6 +26,7 @@ const purchaseFilter = (req: Request): FilterQuery<PurchaseDocument> => {
     "cost",
     filter
   );
+  rangeDateQuery(req.query.minDate, req.query.maxDate, "createdAt", filter);
   return filter;
 };
 

@@ -12,6 +12,9 @@ import mongoose, { FilterQuery } from "mongoose";
 import { REPAIR_TYPES } from "../models/repair";
 
 const billFilter = (req: Request): FilterQuery<BillDocument> => {
+  const q = req.query.q;
+  if (validStrQuery(q, { minLength: 2, maxLength: 16 }))
+    return { description: { $regex: q } };
   if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
     return { _id: req.query._id };
   if (validStrQuery(req.query.id_repair, { minLength: 24, maxLength: 24 }))
