@@ -18,6 +18,7 @@ const inventoryFilter = (req: Request): FilterQuery<InventoryDocument> => {
   const q = req.query.q;
   if (validStrQuery(q, { minLength: 2, maxLength: 16 }))
     return { name: { $regex: q.toLowerCase() } };
+  if (req.query.min === "true") return { $expr: { $gte: ["$min", "$stock"] } };
   if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
     return { _id: req.query._id };
   const filter: FilterQuery<InventoryDocument> = {};
