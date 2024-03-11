@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Employee, { EMPLOYEE_ROLES, EmployeeDocument } from "../models/employee";
 import getErrorMessage from "../utils/errors";
 import {
+  querySort,
   rangeQuery,
   validEnumQuery,
   validOrderQuery,
@@ -31,9 +32,9 @@ const employeeFilter = (req: Request): FilterQuery<EmployeeDocument> => {
 
 const getEmployees = async (req: Request, res: Response) => {
   try {
-    const employees = await Employee.find(employeeFilter(req)).sort({
-      _id: validOrderQuery(req.query.order),
-    });
+    const employees = await Employee.find(employeeFilter(req)).sort(
+      querySort(req, ["date", "name", "age"])
+    );
     return res.json(employees);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

@@ -7,10 +7,10 @@ import Repair, {
 import getErrorMessage from "../utils/errors";
 import { FilterQuery } from "mongoose";
 import {
+  querySort,
   rangeDateQueryId,
   rangeQuery,
   validEnumQuery,
-  validOrderQuery,
   validStrQuery,
 } from "../utils/query";
 import billCtrl from "./bill.controller";
@@ -46,9 +46,9 @@ const repairFilter = (req: Request): FilterQuery<RepairDocument> => {
 
 const getRepairs = async (req: Request, res: Response) => {
   try {
-    const repairs = await Repair.find(repairFilter(req)).sort({
-      _id: validOrderQuery(req.query.order),
-    });
+    const repairs = await Repair.find(repairFilter(req)).sort(
+      querySort(req, ["date", "price"])
+    );
     return res.json(repairs);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

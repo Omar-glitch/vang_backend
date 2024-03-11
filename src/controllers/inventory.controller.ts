@@ -4,12 +4,13 @@ import Inventory, {
   InventoryDocument,
 } from "../models/inventory";
 import getErrorMessage from "../utils/errors";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, SortOrder } from "mongoose";
 import {
   rangeQuery,
-  validEnumQuery,
   validOrderQuery,
+  validEnumQuery,
   validStrQuery,
+  querySort,
 } from "../utils/query";
 import purchaseCtrl from "./purchase.controller";
 import Repair from "../models/repair";
@@ -43,9 +44,9 @@ const inventoryFilter = (req: Request): FilterQuery<InventoryDocument> => {
 
 const getInventories = async (req: Request, res: Response) => {
   try {
-    const inventories = await Inventory.find(inventoryFilter(req)).sort({
-      _id: validOrderQuery(req.query.order),
-    });
+    const inventories = await Inventory.find(inventoryFilter(req)).sort(
+      querySort(req, ["date", "name", "stock", "cost", "min"])
+    );
     return res.json(inventories);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

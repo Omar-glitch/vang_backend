@@ -2,13 +2,13 @@ import { Request, Response } from "express";
 import Bill, { BillDocument } from "../models/bill";
 import getErrorMessage from "../utils/errors";
 import {
+  querySort,
   rangeDateQueryId,
   rangeQuery,
   validEnumQuery,
-  validOrderQuery,
   validStrQuery,
 } from "../utils/query";
-import mongoose, { FilterQuery } from "mongoose";
+import mongoose, { FilterQuery, SortOrder } from "mongoose";
 import { REPAIR_TYPES } from "../models/repair";
 
 const billFilter = (req: Request): FilterQuery<BillDocument> => {
@@ -39,9 +39,9 @@ const billFilter = (req: Request): FilterQuery<BillDocument> => {
 
 const getBills = async (req: Request, res: Response) => {
   try {
-    const bills = await Bill.find(billFilter(req)).sort({
-      _id: validOrderQuery(req.query.order),
-    });
+    const bills = await Bill.find(billFilter(req)).sort(
+      querySort(req, ["date", "amount"])
+    );
     return res.json(bills);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

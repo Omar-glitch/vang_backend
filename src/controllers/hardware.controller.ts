@@ -6,9 +6,9 @@ import Hardware, {
 import getErrorMessage from "../utils/errors";
 import { FilterQuery } from "mongoose";
 import {
+  querySort,
   rangeQuery,
   validEnumQuery,
-  validOrderQuery,
   validStrQuery,
 } from "../utils/query";
 import purchaseCtrl from "./purchase.controller";
@@ -41,9 +41,9 @@ const hardwareFilter = (req: Request): FilterQuery<HardwareDocument> => {
 
 const getHardwares = async (req: Request, res: Response) => {
   try {
-    const hardwares = await Hardware.find(hardwareFilter(req)).sort({
-      _id: validOrderQuery(req.query.order),
-    });
+    const hardwares = await Hardware.find(hardwareFilter(req)).sort(
+      querySort(req, ["date", "name", "cost", "stock"])
+    );
     return res.json(hardwares);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

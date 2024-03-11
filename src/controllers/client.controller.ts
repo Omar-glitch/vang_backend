@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Client, { ClientDocument } from "../models/client";
 import getErrorMessage from "../utils/errors";
 import { FilterQuery } from "mongoose";
-import { validOrderQuery, validStrQuery } from "../utils/query";
+import { querySort, rangeDateQueryId, validStrQuery } from "../utils/query";
 import Repair from "../models/repair";
 
 const clientFilter = (req: Request): FilterQuery<ClientDocument> => {
@@ -11,14 +11,16 @@ const clientFilter = (req: Request): FilterQuery<ClientDocument> => {
     return { name: { $regex: q.toLowerCase() } };
   if (validStrQuery(req.query._id, { minLength: 24, maxLength: 24 }))
     return { _id: req.query._id };
-  return {};
+  const filter = {};
+  rangeDateQueryId(req.query.minDate, req.query.maxDate, "_id", filter);
+  return filter;
 };
 
 const getClients = async (req: Request, res: Response) => {
   try {
-    const clients = await Client.find(clientFilter(req)).sort({
-      _id: validOrderQuery(req.query.order),
-    });
+    const clients = await Client.find(clientFilter(req)).sort(
+      querySort(req, ["date", "name"])
+    );
     return res.json(clients);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));

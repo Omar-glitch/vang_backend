@@ -1,5 +1,6 @@
+import { Request } from "express";
 import moment from "moment";
-import mongoose from "mongoose";
+import mongoose, { SortOrder } from "mongoose";
 
 export const validStrQuery = (
   item: unknown,
@@ -97,4 +98,20 @@ export const rangeDateQueryId = (
           .getTime() / 1000
       );
   }
+};
+
+export const querySort = (
+  req: Request,
+  validFields: string[]
+): Record<string, SortOrder> => {
+  const o = req.query.order;
+  if (!o) return { _id: -1 };
+  if (typeof o !== "string") return { _id: -1 };
+  let splitted = o.split("-");
+  if (splitted.length !== 2) return { _id: -1 };
+  const field = splitted[0];
+  const order = splitted[1];
+  if (!validFields.includes(field)) return { _id: -1 };
+  if (field === "date") return { _id: validOrderQuery(order) };
+  return { [field]: validOrderQuery(order) };
 };

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Purchase, { PURCHASE_TYPES, PurchaseDocument } from "../models/purchase";
 import getErrorMessage from "../utils/errors";
 import {
+  querySort,
   rangeDateQueryId,
   rangeQuery,
   validEnumQuery,
@@ -32,9 +33,9 @@ const purchaseFilter = (req: Request): FilterQuery<PurchaseDocument> => {
 
 const getPurchases = async (req: Request, res: Response) => {
   try {
-    const purchases = await Purchase.find(purchaseFilter(req)).sort({
-      _id: validOrderQuery(req.query.order),
-    });
+    const purchases = await Purchase.find(purchaseFilter(req)).sort(
+      querySort(req, ["date", "cost"])
+    );
     return res.json(purchases);
   } catch (e) {
     return res.status(400).json(getErrorMessage(e));
